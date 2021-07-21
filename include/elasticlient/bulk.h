@@ -85,6 +85,10 @@ class SameIndexBulkData: public IBulkData {
             const std::string &docType, const std::string &id,
             const std::string &doc);
 
+    bool createDocument(
+            const std::string &docType, const std::string &id,
+            std::string &&doc);
+
     /**
      * Add update document request to the bulk.
      * \param docType document type (as specified in mapping).

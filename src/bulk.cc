@@ -68,6 +68,15 @@ bool SameIndexBulkData::createDocument(
     return impl->data.size() >= impl->size;
 }
 
+bool SameIndexBulkData::createDocument(
+        const std::string &docType, const std::string &id, std::string &&doc)
+{
+    validateDocument(doc, id);
+    impl->data.emplace_back(createControl("create", docType, id), std::move(doc));
+    // return true if bulk has reached its desired capacity
+    return impl->data.size() >= impl->size;
+}
+
 bool SameIndexBulkData::updateDocument(
         const std::string &docType, const std::string &id, const std::string &doc)
 {
@@ -139,12 +148,11 @@ std::string createControl(const std::string &action,
 
 
 void Bulk::Implementation::run(const IBulkData &bulk) {
-    std::string body = bulk.body();
     std::string indexName = bulk.indexName();
     try {
         const cpr::Response r = client->performRequest(Client::HTTPMethod::POST,
                                                        indexName + "/_bulk",
-                                                       body);
+                                                       std::move(bulk.body()));
         if (r.status_code / 100 != 2) {
             throw ConnectionException("Elastic node not respond with status 2xx.");
         }
