@@ -59,19 +59,29 @@ bool SameIndexBulkData::indexDocument(
 }
 
 
-bool SameIndexBulkData::createDocument(
-        const std::string &docType, const std::string &id, const std::string &doc)
+bool SameIndexBulkData::createDocument(const std::string &docType,
+                                       const std::string &id,
+                                       const std::string &doc,
+                                       bool validate)
 {
-    validateDocument(doc, id);
+    if (validate) {
+        validateDocument(doc, id);
+    }
+
     impl->data.emplace_back(createControl("create", docType, id), doc);
     // return true if bulk has reached its desired capacity
     return impl->data.size() >= impl->size;
 }
 
-bool SameIndexBulkData::createDocument(
-        const std::string &docType, const std::string &id, std::string &&doc)
+bool SameIndexBulkData::createDocument(const std::string &docType,
+                                       const std::string &id,
+                                       std::string &&doc,
+                                       bool validate)
 {
-    validateDocument(doc, id);
+    if (validate) {
+        validateDocument(doc, id);
+    }
+
     impl->data.emplace_back(createControl("create", docType, id), std::move(doc));
     // return true if bulk has reached its desired capacity
     return impl->data.size() >= impl->size;
