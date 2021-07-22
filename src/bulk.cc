@@ -164,7 +164,7 @@ void Bulk::Implementation::run(const IBulkData &bulk) {
                                                        indexName + "/_bulk",
                                                        bulk.body());
         if (r.status_code / 100 != 2) {
-            throw ConnectionException("Elastic node respond with status" 
+            throw ConnectionException("Elastic node respond with status "
                                        + std::to_string(r.status_code)
                                        + ". " + r.text);
         }
