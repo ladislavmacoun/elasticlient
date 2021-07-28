@@ -51,14 +51,14 @@ std::string SameIndexBulkData::indexName() const {
 
 bool SameIndexBulkData::indexDocument(const std::string &docType,
                                       const std::string &id,
-                                      const std::string &doc,
+                                      std::string &&doc,
                                       bool validate)
 {
     if (validate) {
         validateDocument(doc, id);
     }
 
-    impl->data.emplace_back(createControl("index", docType, id), doc);
+    impl->data.emplace_back(createControl("index", docType, id), std::move(doc));
     // return true if bulk has reached its desired capacity
     return impl->data.size() >= impl->size;
 }
@@ -66,28 +66,28 @@ bool SameIndexBulkData::indexDocument(const std::string &docType,
 
 bool SameIndexBulkData::createDocument(const std::string &docType,
                                        const std::string &id,
-                                       const std::string &doc,
+                                       std::string &&doc,
                                        bool validate)
 {
     if (validate) {
         validateDocument(doc, id);
     }
 
-    impl->data.emplace_back(createControl("create", docType, id), doc);
+    impl->data.emplace_back(createControl("create", docType, id), std::move(doc));
     // return true if bulk has reached its desired capacity
     return impl->data.size() >= impl->size;
 }
 
 bool SameIndexBulkData::updateDocument(const std::string &docType,
                                        const std::string &id,
-                                       const std::string &doc,
+                                       std::string &&doc,
                                        bool validate)
 {
     if (validate) {
         validateDocument(doc, id);
     }
 
-    impl->data.emplace_back(createControl("update", docType, id), doc);
+    impl->data.emplace_back(createControl("update", docType, id), std::move(doc));
     // return true if bulk has reached its desired capacity
     return impl->data.size() >= impl->size;
 }

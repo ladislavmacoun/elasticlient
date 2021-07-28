@@ -73,7 +73,7 @@ class SameIndexBulkData: public IBulkData {
      */
     bool indexDocument(const std::string &docType,
                        const std::string &id,
-                       const std::string &doc,
+                       std::string &&doc,
                        bool validate = true);
 
     /**
@@ -86,7 +86,7 @@ class SameIndexBulkData: public IBulkData {
      */
     bool createDocument(const std::string &docType,
                         const std::string &id,
-                        const std::string &doc,
+                        std::string &&doc,
                         bool validate = true);
 
     /**
@@ -100,7 +100,7 @@ class SameIndexBulkData: public IBulkData {
     bool updateDocument(
             const std::string &docType,
             const std::string &id,
-            const std::string &doc,
+            std::string &&doc,
             bool validate = true);
 
     /// Clear bulk (size() == 0 after this).
