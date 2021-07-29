@@ -9,6 +9,9 @@
 #include <sstream>
 #include <cpr/cpr.h>
 #include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+#include "elasticlient/logging.h"
 #include "logging-impl.h"
 #include "elasticlient/client.h"
 
@@ -160,7 +163,7 @@ void Bulk::Implementation::run(const IBulkData &bulk) {
         const cpr::Response r = client->performRequest(Client::HTTPMethod::POST,
                                                        indexName + "/_bulk",
                                                        body);
-        if (r.status_code / 100 != 2) {
+        if (r.status_code < 200 || r.status_code > 299) {
             throw ConnectionException("Elastic node respond with status" 
                                        + std::to_string(r.status_code)
                                        + ". " + r.text);
@@ -183,13 +186,27 @@ std::size_t Bulk::perform(const IBulkData &bulk) {
 }
 
 
+static std::string jsonValueToString(const rapidjson::Value& val) {
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    val.Accept(writer);
+
+    return buffer.GetString();
+};
+
+
 void Bulk::Implementation::processResult(
         const std::string &result, std::size_t size)
 {
     rapidjson::Document root;
+
     rapidjson::ParseResult ok = root.Parse(result.c_str());
     if (!ok || !root.IsObject()) {
         // probably whole bulk has failed
+        if (root.HasParseError()) {
+            LOG(LogLevel::WARNING, "Failed to parse elastic response, invalid json!");
+        }
+
         errCount += size;
         return;
     }
@@ -222,6 +239,7 @@ void Bulk::Implementation::processResult(
                                "at the response! Err count is inaccurate now!");
         return;
     }
+
     const rapidjson::Value &items = root["items"];
     // check correct type of the items
     if (!items.IsArray()) {
@@ -239,20 +257,22 @@ void Bulk::Implementation::processResult(
         }
 
         // check index action response
-        if (item.HasMember("index")) {
-            const rapidjson::Value &res = item["index"];
+        if (item.HasMember("create")) {
+            const rapidjson::Value &res = item["create"];
             if (!res.IsObject()) {
                 LOG(LogLevel::WARNING, "Bulk response has unexpected format, "
                                        "object was expected.");
                 errCount++;
                 continue;
             }
+
             // read status code
             if (!res.HasMember("status")) {
                 LOG(LogLevel::WARNING, "Bulk response item with missing status.");
                 errCount++;
                 continue;
             };
+
             const rapidjson::Value &status = res["status"];
             if (!status.IsInt()) {
                 LOG(LogLevel::WARNING, "Bulk response was expected to have numeric status. "
@@ -262,17 +282,29 @@ void Bulk::Implementation::processResult(
             }
 
             // if status code is not 2xx family, consider it as error
-            if (status.GetInt() / 100 != 2) {
+            int status_code = status.GetInt();
+            if (status_code < 200 || status_code > 299) {
+                std::ostringstream out;
+                out << "Bulk response contains status code "
+                    << std::to_string(status.GetInt())
+                    << " Elastic response: " << jsonValueToString(item);
+
+                LOG(LogLevel::WARNING, out.str().c_str());
                 errCount++;
             }
+
         } else {
-            LOG(LogLevel::WARNING, "Unsupported 'action' found at bulk response.");
+            std::ostringstream out;
+            out << "Unsupported 'action' found at bulk response, "
+                << jsonValueToString(root);
+
+            LOG(LogLevel::WARNING, out.str().c_str());
         }
     }
 
     // complain if not all items of the bulk were covered by responses
     if (items.Size() < size) {
-        LOG(LogLevel::INFO, "Bulk has more items than responses received. Cannot tell "
+        LOG(LogLevel::WARNING, "Bulk has more items than responses received. Cannot tell "
                             "whether %lu items succeeded...", size - items.Size());
     }
 }

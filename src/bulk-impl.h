@@ -38,9 +38,14 @@ struct BulkItem {
     /// Data (_source) field. Not needed for "delete" action.
     std::string source;
 
-    explicit BulkItem(const std::string &control = "",
-                      const std::string &source = "")
+    BulkItem(const std::string &control = "",
+             const std::string &source = "")
       : control(control), source(source)
+    {}
+
+    BulkItem(std::string &&control,
+             std::string &&source)
+       : control(std::move(control)), source(std::move(source))
     {}
 
     friend std::ostream &operator<<(std::ostream &os, const BulkItem &item) {
