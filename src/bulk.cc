@@ -213,11 +213,12 @@ std::string createControl(const std::string &action,
 
 
 void Bulk::Implementation::run(const IBulkData &bulk) {
+    std::string body = bulk.body();
     std::string indexName = bulk.indexName();
     try {
         const cpr::Response r = client->performRequest(Client::HTTPMethod::POST,
                                                        indexName + "/_bulk",
-                                                       bulk.body());
+                                                       body);
         if (r.status_code < 200 || r.status_code > 299) {
             throw ConnectionException("Elastic node respond with status" 
                                        + std::to_string(r.status_code)
