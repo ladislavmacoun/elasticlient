@@ -96,10 +96,20 @@ class Client::Implementation {
                                      const std::string &body,
                                      cpr::Response &response);
 
+    bool performRequestOnCurrentHost(Client::HTTPMethod method,
+                                     const std::string &urlPath,
+                                     std::string &&body,
+                                     cpr::Response &response);
+
     /// \see Client::performRequest
     cpr::Response performRequest(Client::HTTPMethod method,
                                  const std::string &urlPath,
                                  const std::string &body = std::string());
+
+    /// \see Client::performRequest
+    cpr::Response performRequest(Client::HTTPMethod method,
+                                 const std::string &urlPath,
+                                 std::string &&body);
 
     /// Set client option from ClientOption derived classes.
     void setClientOption(const ClientOption &opt) {

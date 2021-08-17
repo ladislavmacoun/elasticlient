@@ -256,6 +256,10 @@ class Client {
                                  const std::string &urlPath,
                                  const std::string &body);
 
+    cpr::Response performRequest(HTTPMethod method,
+                                 const std::string &urlPath,
+                                 std::string &&body);
+
     /**
      * Perform search on nodes until it is successful. Throws exception if all nodes
      * has failed to respond.

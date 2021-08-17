@@ -151,6 +151,12 @@ cpr::Response Client::performRequest(
    return impl->performRequest(method, urlPath, body);
 }
 
+cpr::Response Client::performRequest(
+        HTTPMethod method, const std::string &urlPath, std::string &&body)
+{
+   return impl->performRequest(method, urlPath, std::move(body));
+}
+
 
 bool Client::Implementation::performRequestOnCurrentHost(Client::HTTPMethod method,
                                                          const std::string &urlPath,
@@ -213,6 +219,69 @@ bool Client::Implementation::performRequestOnCurrentHost(Client::HTTPMethod meth
     return true;
 }
 
+bool Client::Implementation::performRequestOnCurrentHost(Client::HTTPMethod method,
+                                                         const std::string &urlPath,
+                                                         std::string &&body,
+                                                         cpr::Response &response)
+{
+    const std::string entireUrl = hostUrlList[currentHostIndex] + urlPath;
+    session.SetUrl(cpr::Url(entireUrl));
+    cpr::Header header;
+
+    if (!body.empty()) {
+        header["Content-Type"] = "application/json; charset=utf-8";
+    }
+
+    session.SetHeader(header);
+    session.SetBody(cpr::Body(std::move(body)));
+
+    switch (method) {
+        case Client::HTTPMethod::GET:
+            LOG(LogLevel::DEBUG, "Called GET: %s", urlPath.c_str());
+            response = session.Get();
+            break;
+        case Client::HTTPMethod::POST:
+            LOG(LogLevel::DEBUG, "Called POST: %s", urlPath.c_str());
+            response = session.Post();
+            break;
+        case Client::HTTPMethod::PUT:
+            LOG(LogLevel::DEBUG, "Called PUT: %s", urlPath.c_str());
+            response = session.Put();
+            break;
+        case Client::HTTPMethod::DELETE:
+            LOG(LogLevel::DEBUG, "Called DELETE: %s", urlPath.c_str());
+            response = session.Delete();
+            break;
+        case Client::HTTPMethod::HEAD:
+            LOG(LogLevel::DEBUG, "Called HEAD: %s", urlPath.c_str());
+            response = session.Head();
+            break;
+        default:
+            throw std::runtime_error("This HTTP method is not implemented yet.");
+    }
+
+    LOG(LogLevel::INFO, "Host returned %ld in %lf s for %s.", response.status_code,
+        response.elapsed, entireUrl.c_str());
+
+    LOG(LogLevel::DEBUG, "Host response text: %s", response.text.c_str());
+
+    LOG(LogLevel::INFO, "Host response size: %lu", response.text.size());
+
+
+    if (response.error) {
+        LOG(LogLevel::WARNING, "Request error: %s", response.error.message.c_str());
+    }
+    // Return false if current node failed for request from following reasons.
+    // Status code = 0 means, that it is not possible to connect to Elastic node.
+    // Status code = 503 means that Elastic node is temporarily unavailable, maybe because of queue
+    // capacity of node is full filled.
+    if (response.status_code == 0 || response.status_code == 503) {
+        LOG(LogLevel::WARNING, "Host on URL '%s' is unavailable.", entireUrl.c_str());
+        return false;
+    }
+    return true;
+}
+
 
 cpr::Response Client::Implementation::performRequest(
         Client::HTTPMethod method, const std::string &urlPath, const std::string &body)
@@ -221,6 +290,25 @@ cpr::Response Client::Implementation::performRequest(
     cpr::Response response;
     while (!isSuccessful) {
         isSuccessful = performRequestOnCurrentHost(method, urlPath, body, response);
+        if (!isSuccessful && !failCurrentHostAndIterateNext()) {
+            throw ConnectionException("All hosts failed for request.");
+        }
+    }
+    // Reset failCounter if any host successfuly responds.
+    failCounter = 0;
+    return response;
+}
+
+cpr::Response Client::Implementation::performRequest(
+        Client::HTTPMethod method, const std::string &urlPath, std::string &&body)
+{
+    bool isSuccessful = false;
+    cpr::Response response;
+    while (!isSuccessful) {
+        isSuccessful = performRequestOnCurrentHost(method,
+                                                   urlPath,
+                                                   std::move(body),
+                                                   response);
         if (!isSuccessful && !failCurrentHostAndIterateNext()) {
             throw ConnectionException("All hosts failed for request.");
         }
