@@ -223,11 +223,10 @@ std::string createControl(const std::string &action,
                           const std::string &docId)
 {
     std::ostringstream out;
-    out << "{\"" << action << "\": {"
-           "\"_type\": \"" << docType << "\"";
+    out << "{\"" << action << "\": {";
 
     if (!docId.empty()) {
-        out << ", \"_id\": \"" << docId << "\"";
+        out << "\"_id\": \"" << docId << "\"";
     }
 
     out << "}}";
