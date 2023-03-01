@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['impl_113',['impl',['../classelasticlient_1_1Scroll.html#a131f03fb1b11c3cc1cb6f9e80f9863d2',1,'elasticlient::Scroll']]]
+  ['document_120',['document',['../structelasticlient_1_1JsonResult.html#a0f10912b4254b5a102ec665a88e4bb85',1,'elasticlient::JsonResult']]]
 ];

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['timeoutoption_50',['TimeoutOption',['../structelasticlient_1_1Client_1_1TimeoutOption.html',1,'elasticlient::Client']]],
-  ['todo_20list_51',['Todo List',['../todo.html',1,'']]]
+  ['remove_41',['remove',['../classelasticlient_1_1Client.html#a1e27ce1366068b2438d1b5b3073f3d41',1,'elasticlient::Client']]]
 ];

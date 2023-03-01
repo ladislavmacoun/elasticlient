@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['elasticlient_17',['elasticlient',['../namespaceelasticlient.html',1,'']]],
-  ['empty_18',['empty',['../classelasticlient_1_1IBulkData.html#a15da9a0afc4a80620875ad0d2ed3acc6',1,'elasticlient::IBulkData::empty()'],['../classelasticlient_1_1SameIndexBulkData.html#a14c38516fe248bfe1c2060a4dae14f81',1,'elasticlient::SameIndexBulkData::empty()']]]
+  ['document_17',['document',['../structelasticlient_1_1JsonResult.html#a0f10912b4254b5a102ec665a88e4bb85',1,'elasticlient::JsonResult']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['proxiesoption_67',['ProxiesOption',['../structelasticlient_1_1Client_1_1ProxiesOption.html',1,'elasticlient::Client']]]
+  ['keyfile_71',['KeyFile',['../structelasticlient_1_1Client_1_1SSLOption_1_1KeyFile.html',1,'elasticlient::Client::SSLOption']]]
 ];

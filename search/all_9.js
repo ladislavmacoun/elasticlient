@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['next_33',['next',['../classelasticlient_1_1Scroll.html#a16a483626ae3ffc543e5cbda11417750',1,'elasticlient::Scroll']]]
+  ['keyfile_31',['KeyFile',['../structelasticlient_1_1Client_1_1SSLOption_1_1KeyFile.html',1,'elasticlient::Client::SSLOption']]]
 ];

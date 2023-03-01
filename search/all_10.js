@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['verifyhost_53',['VerifyHost',['../structelasticlient_1_1Client_1_1SSLOption_1_1VerifyHost.html',1,'elasticlient::Client::SSLOption']]],
-  ['verifypeer_54',['VerifyPeer',['../structelasticlient_1_1Client_1_1SSLOption_1_1VerifyPeer.html',1,'elasticlient::Client::SSLOption']]]
+  ['timeoutoption_54',['TimeoutOption',['../structelasticlient_1_1Client_1_1TimeoutOption.html',1,'elasticlient::Client']]],
+  ['todo_20list_55',['Todo List',['../todo.html',1,'']]]
 ];

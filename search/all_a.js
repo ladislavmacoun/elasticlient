@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['optsetter_34',['optSetter',['../structelasticlient_1_1Client_1_1SSLOption.html#a17a820e0450a156614138506fe1e8432',1,'elasticlient::Client::SSLOption::optSetter(T &amp;&amp;t)'],['../structelasticlient_1_1Client_1_1SSLOption.html#af8c99c24c87bcef8aba522367d89f012',1,'elasticlient::Client::SSLOption::optSetter(T &amp;&amp;t, TRest &amp;&amp;... ts)']]]
+  ['logcallback_32',['LogCallback',['../namespaceelasticlient.html#a6ac55d34331fb5e9e16b59060f3c4d76',1,'elasticlient']]],
+  ['logging_2eh_33',['logging.h',['../logging_8h.html',1,'']]],
+  ['loglevel_34',['LogLevel',['../namespaceelasticlient.html#aaaafc04bb2a5fe4cc06cacd88a5aee70',1,'elasticlient']]]
 ];
